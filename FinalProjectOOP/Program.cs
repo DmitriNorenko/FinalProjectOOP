@@ -5,102 +5,84 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static FinalProjectOOP.Program;
 
 namespace FinalProjectOOP
 {
     internal class Program
     {
-       
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Выберите тип доставки(1-3): 1- Доставка на дом.\n 2- Доставка в пункт выдачи.\n 3- Доставка в магазин.\n");
-            int num = int.Parse(Console.ReadLine());
-            bool work = true;
-            while (work)
+            Console.WriteLine(" Введите адрес: ");
+            string address = Console.ReadLine();
+
+        }
+        abstract class Delivery
+        {
+            public string Address;
+            public Delivery(string address)
             {
-                switch (num)
-                {
-                    case 1:
-                        HomeDelivery homeDelivery;
-                        homeDelivery.RegistrationOfDelivery("Пушкина 18");
-                        work = false;
-                        break;
-                    case 2:
-                        PickPointDelivery pickPointDelivery = new PickPointDelivery("Ленина 46");
-                        work = false;
-                        break;
-                    case 3:
-                        ShopDelivery shopDelivery = new ShopDelivery("Лермонтова 21");
-                        work = false;
-                        break;
-                    default:
-                        Console.WriteLine("Вы ввели неправильное значение.");
-                        break;
-                }
+                Address = address;
+            }
+            public virtual void ShowDelivery()
+            {
+                Console.WriteLine($" Ваш адрес доставки:{Address} ");
             }
         }
         public struct Courier
         {
             public string Name;
-            string PhoneNumber;
-
-            public Courier(string name = "Tom", string phoneNumber = "8(988)312-76-43")
+            public string PhoneNum;
+            public Courier(string name = "Иван", string phoneNum = "8(988)456-43-65")
             {
                 Name = name;
-                PhoneNumber = phoneNumber;
-            }
-            public void ShowCourier()
-            {
-                Console.WriteLine("Ваш курьер:{0}, Номер телефона:{1}", Name, PhoneNumber);
+                PhoneNum = phoneNum;
             }
         }
-
-        public abstract class Delivery
-        {
-            public string Address;
-
-            public Delivery(string text)
-            {
-                Address = text;
-            }
-        }
-
         class HomeDelivery : Delivery
         {
-            public HomeDelivery(string text) : base(text)
+            Courier courier = new Courier();
+            public HomeDelivery(string address) : base(address) { }
+            public override void ShowDelivery()
             {
-                Console.WriteLine("Вы вызвали доставку на дом.");
-            }
-            public void RegistrationOfDelivery(string Street) 
-            {
-            
+                Console.WriteLine($"К вам выдвигается курьер: {courier.Name} по адресу: {Address}");
             }
         }
-
         class PickPointDelivery : Delivery
         {
-            PickPointDelivery pickPointDelivery = new PickPointDelivery("Ленина 46");
-            public PickPointDelivery(string text) : base(text)
+            protected string Point
             {
-                Console.WriteLine("Вы выбрали доставку в пункт выдачи.");
-                Order<PickPointDelivery, Courier> order2 = new Order<PickPointDelivery, Courier>(pickPointDelivery, 02);
+                get { return "Солнечная 143"; }
+                private set { }
+            }
+            public PickPointDelivery(string address) : base(address) { }
+            public override void ShowDelivery()
+            {
+                Console.WriteLine("Ваша посылка ожидает вас на пункте забора: {0}", Point);
             }
         }
 
         class ShopDelivery : Delivery
         {
-            ShopDelivery shopDelivery = new ShopDelivery("Лермонтова 21");
-            public ShopDelivery(string text) : base(text)
+            protected string Point = "Лучезарная 29";
+            ShopDelivery(string address) : base(address)
             {
-                Console.WriteLine("Вы выбрали доставку в магазин.");
-                Order<ShopDelivery, Courier> order3 = new Order<ShopDelivery, Courier>(shopDelivery, 03);
+                Console.WriteLine();
+            }
+            public override void ShowDelivery()
+            {
+                Console.WriteLine("Ваша посылка прибыла по нужному адресу.", Point);
             }
         }
 
-        class Order<TDelivery, TStruct> where TDelivery : Delivery
+        class Order<TDelivery,
+        TStruct> where TDelivery : Delivery
         {
             public TDelivery Delivery;
+
             public int Number;
+
             public string Description;
 
             public Order(TDelivery delivery, int number = 01, string description = " ")
@@ -108,31 +90,37 @@ namespace FinalProjectOOP
                 Delivery = delivery;
                 Number = number;
                 Description = description;
-                OrderCollection orderCollection = new OrderCollection();
-            }
-            public void DisplayAddress()
-            {
-                Console.WriteLine(Delivery.Address);
+                Console.WriteLine("Ваша корзина собрана:");
+                Products.ShowBasket();
             }
         }
 
-        class OrderCollection
+        public class Products
         {
-            private Product Products;
+            public static string[] products = { "Мясо", "Хлеб", "Молоко", "Зелень" };
 
-            public OrderCollection()
+            public string this[int index]
             {
-                Products = new Product();
-                Courier courier = new Courier();
-                courier.ShowCourier();
+                get
+                {
+                    if (index < 0 && index > products.Length)
+                    {
+                        return products[index];
+                    }
+                    else
+                    {
+                        Console.WriteLine("Товара под таким индексом нет.");
+                        return null;
+                    }
+                }
+                private set { }
             }
-
-        }
-        class Product
-        {
-            public Product()
+            public static void ShowBasket()
             {
-                Console.WriteLine("Ваша корзина с продуктами собрана и ожидает курьера.");
+                for(int i = 0; i < products.Length; i++) 
+                {
+                    Console.WriteLine(products[i]);
+                }
             }
         }
     }
