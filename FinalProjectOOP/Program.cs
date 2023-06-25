@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static FinalProjectOOP.Program;
@@ -14,9 +15,25 @@ namespace FinalProjectOOP
 
         static void Main(string[] args)
         {
-            Console.WriteLine(" Введите адрес: ");
+            Console.WriteLine(" Введите ваш адрес: ");
             string address = Console.ReadLine();
-
+            bool IsWork = true;
+            while (IsWork)
+            {
+                Console.WriteLine("Выберите вариант доставки(1-3)");
+                int i = Convert.ToInt32(Console.ReadLine());
+                switch (i)
+                {
+                    case 1:
+                        Courier courier = new Courier();
+                        courier.HaveCourier();
+                        HomeDelivery homeDelivery = new HomeDelivery(address,courier);
+                        Order<HomeDelivery, Courier> order1 = new Order<HomeDelivery, Courier>(homeDelivery);
+                        homeDelivery.ShowDelivery();
+                        IsWork = false;
+                        break;
+                }
+            }
         }
         abstract class Delivery
         {
@@ -34,7 +51,7 @@ namespace FinalProjectOOP
         {
             public string Name;
             public string PhoneNum;
-            public Courier(string name = "Иван", string phoneNum = "8(988)456-43-65")
+            public void HaveCourier(string name = "Иван", string phoneNum = "8(988)456-43-65")
             {
                 Name = name;
                 PhoneNum = phoneNum;
@@ -42,11 +59,15 @@ namespace FinalProjectOOP
         }
         class HomeDelivery : Delivery
         {
-            Courier courier = new Courier();
-            public HomeDelivery(string address) : base(address) { }
+            Courier courier;
+            public HomeDelivery(string address,Courier courier) : base(address)
+            {
+            this.courier = courier;
+            }
+
             public override void ShowDelivery()
             {
-                Console.WriteLine($"К вам выдвигается курьер: {courier.Name} по адресу: {Address}");
+                Console.WriteLine($"\n К вам выдвигается курьер: {courier.Name}\n по адресу: {Address}\n Номер телефона: {courier.PhoneNum}");
             }
         }
         class PickPointDelivery : Delivery
@@ -59,7 +80,7 @@ namespace FinalProjectOOP
             public PickPointDelivery(string address) : base(address) { }
             public override void ShowDelivery()
             {
-                Console.WriteLine("Ваша посылка ожидает вас на пункте забора: {0}", Point);
+                Console.WriteLine("Ваша посылка прибудет на пункт выдачи через {0}");
             }
         }
 
@@ -76,8 +97,7 @@ namespace FinalProjectOOP
             }
         }
 
-        class Order<TDelivery,
-        TStruct> where TDelivery : Delivery
+        class Order<TDelivery, TStruct> where TDelivery : Delivery
         {
             public TDelivery Delivery;
 
@@ -85,16 +105,33 @@ namespace FinalProjectOOP
 
             public string Description;
 
+            TStruct courier;
             public Order(TDelivery delivery, int number = 01, string description = " ")
             {
                 Delivery = delivery;
                 Number = number;
                 Description = description;
-                Console.WriteLine("Ваша корзина собрана:");
+                Console.WriteLine($" \n Номер вашего заказа: {Number} ");
+                Console.WriteLine("\n Ваша корзина собрана:\n");
                 Products.ShowBasket();
+
+                ShowTimeDelivery(30);
+            }
+            public static void ShowTimeDelivery(int time)
+            {
+                DateDelivery date = new DateDelivery(TimeSpan.FromMinutes(time));
+                Console.WriteLine($"\n Приблизительное время доставки: {date.Date}");
             }
         }
+        struct DateDelivery
+        {
+            public DateTime Date;
 
+            public DateDelivery(TimeSpan time)
+            {
+                Date = DateTime.Now + time;
+            }
+        }
         public class Products
         {
             public static string[] products = { "Мясо", "Хлеб", "Молоко", "Зелень" };
@@ -117,7 +154,7 @@ namespace FinalProjectOOP
             }
             public static void ShowBasket()
             {
-                for(int i = 0; i < products.Length; i++) 
+                for (int i = 0; i < products.Length; i++)
                 {
                     Console.WriteLine(products[i]);
                 }
