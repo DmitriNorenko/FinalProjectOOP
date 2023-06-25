@@ -15,8 +15,7 @@ namespace FinalProjectOOP
 
         static void Main(string[] args)
         {
-            Console.WriteLine(" Введите ваш адрес: ");
-            string address = Console.ReadLine();
+
             bool IsWork = true;
             while (IsWork)
             {
@@ -25,11 +24,28 @@ namespace FinalProjectOOP
                 switch (i)
                 {
                     case 1:
+                        Console.WriteLine(" Введите ваш адрес: ");
+                        string address = Console.ReadLine();
                         Courier courier = new Courier();
                         courier.HaveCourier();
-                        HomeDelivery homeDelivery = new HomeDelivery(address,courier);
-                        Order<HomeDelivery, Courier> order1 = new Order<HomeDelivery, Courier>(homeDelivery);
+                        HomeDelivery homeDelivery = new HomeDelivery(address, courier);
+                        Order<HomeDelivery> order1 = new Order<HomeDelivery>(homeDelivery, 673254);
+                        Order<HomeDelivery>.ShowTimeDelivery(30);
                         homeDelivery.ShowDelivery();
+                        IsWork = false;
+                        break;
+                    case 2:
+                        PickPointDelivery pickPointDelivery = new PickPointDelivery("");
+                        Order<PickPointDelivery> order2 = new Order<PickPointDelivery>(pickPointDelivery, 223238);
+                        Order<PickPointDelivery>.ShowTimeDelivery(60);
+                        pickPointDelivery.ShowDelivery();
+                        IsWork = false;
+                        break;
+                    case 3:
+                        ShopDelivery shopDelivery = new ShopDelivery("");
+                        Order<ShopDelivery> order3 = new Order<ShopDelivery>(shopDelivery, 332342);
+                        Order<ShopDelivery>.ShowTimeDelivery(120);
+                        shopDelivery.ShowDelivery();
                         IsWork = false;
                         break;
                 }
@@ -60,9 +76,9 @@ namespace FinalProjectOOP
         class HomeDelivery : Delivery
         {
             Courier courier;
-            public HomeDelivery(string address,Courier courier) : base(address)
+            public HomeDelivery(string address, Courier courier) : base(address)
             {
-            this.courier = courier;
+                this.courier = courier;
             }
 
             public override void ShowDelivery()
@@ -77,27 +93,30 @@ namespace FinalProjectOOP
                 get { return "Солнечная 143"; }
                 private set { }
             }
-            public PickPointDelivery(string address) : base(address) { }
+            public PickPointDelivery(string address) : base(address)
+            {
+                Address = Point;
+            }
             public override void ShowDelivery()
             {
-                Console.WriteLine("Ваша посылка прибудет на пункт выдачи через {0}");
+                Console.WriteLine($"\n Ваша посылка выдвигается к пункту выдачи: {Address}");
             }
         }
 
         class ShopDelivery : Delivery
         {
-            protected string Point = "Лучезарная 29";
-            ShopDelivery(string address) : base(address)
+            public string Point = "Лучезарная 29";
+            public ShopDelivery(string address) : base(address)
             {
-                Console.WriteLine();
+                Address = Point;
             }
             public override void ShowDelivery()
             {
-                Console.WriteLine("Ваша посылка прибыла по нужному адресу.", Point);
+                Console.WriteLine("Ваша посылка выдвинулась к нужному адресу: ", Address);
             }
         }
 
-        class Order<TDelivery, TStruct> where TDelivery : Delivery
+        class Order<TDelivery> where TDelivery : Delivery
         {
             public TDelivery Delivery;
 
@@ -105,7 +124,6 @@ namespace FinalProjectOOP
 
             public string Description;
 
-            TStruct courier;
             public Order(TDelivery delivery, int number = 01, string description = " ")
             {
                 Delivery = delivery;
@@ -114,8 +132,6 @@ namespace FinalProjectOOP
                 Console.WriteLine($" \n Номер вашего заказа: {Number} ");
                 Console.WriteLine("\n Ваша корзина собрана:\n");
                 Products.ShowBasket();
-
-                ShowTimeDelivery(30);
             }
             public static void ShowTimeDelivery(int time)
             {
