@@ -19,8 +19,8 @@ namespace FinalProjectOOP
             bool IsWork = true;
             while (IsWork)
             {
-                Console.WriteLine("Выберите вариант доставки(1-3)");
-                int i = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Выберите вариант доставки(1-3)\n 1 - На дом.\n 2 - Пункт выдачи.\n 3 - Магазин.");
+                int.TryParse(Console.ReadLine(), out int i);
                 switch (i)
                 {
                     case 1:
@@ -30,27 +30,34 @@ namespace FinalProjectOOP
                         courier.HaveCourier();
                         HomeDelivery homeDelivery = new HomeDelivery(address, courier);
                         Order<HomeDelivery> order1 = new Order<HomeDelivery>(homeDelivery, 673254);
-                        Order<HomeDelivery>.ShowTimeDelivery(30);
                         homeDelivery.ShowDelivery();
+                        Order<HomeDelivery>.ShowTimeDelivery(30);
+                        Console.ReadKey();
                         IsWork = false;
                         break;
                     case 2:
                         PickPointDelivery pickPointDelivery = new PickPointDelivery("");
                         Order<PickPointDelivery> order2 = new Order<PickPointDelivery>(pickPointDelivery, 223238);
-                        Order<PickPointDelivery>.ShowTimeDelivery(60);
                         pickPointDelivery.ShowDelivery();
+                        Order<PickPointDelivery>.ShowTimeDelivery(60);
+                        Console.ReadKey();
                         IsWork = false;
                         break;
                     case 3:
                         ShopDelivery shopDelivery = new ShopDelivery("");
                         Order<ShopDelivery> order3 = new Order<ShopDelivery>(shopDelivery, 332342);
-                        Order<ShopDelivery>.ShowTimeDelivery(120);
                         shopDelivery.ShowDelivery();
+                        Order<ShopDelivery>.ShowTimeDelivery(120);
+                        Console.ReadKey();
                         IsWork = false;
+                        break;
+                    default:
+                        Console.WriteLine("Такой доставки нет. Введите корректное значение.");
                         break;
                 }
             }
         }
+
         abstract class Delivery
         {
             public string Address;
@@ -63,6 +70,7 @@ namespace FinalProjectOOP
                 Console.WriteLine($" Ваш адрес доставки:{Address} ");
             }
         }
+
         public struct Courier
         {
             public string Name;
@@ -73,6 +81,7 @@ namespace FinalProjectOOP
                 PhoneNum = phoneNum;
             }
         }
+
         class HomeDelivery : Delivery
         {
             Courier courier;
@@ -83,9 +92,10 @@ namespace FinalProjectOOP
 
             public override void ShowDelivery()
             {
-                Console.WriteLine($"\n К вам выдвигается курьер: {courier.Name}\n по адресу: {Address}\n Номер телефона: {courier.PhoneNum}");
+                Console.WriteLine($"\n К вам выдвигается курьер: {courier.Name}.\n по адресу: {Address}.\n Номер телефона: {courier.PhoneNum}.");
             }
         }
+
         class PickPointDelivery : Delivery
         {
             protected string Point
@@ -99,7 +109,7 @@ namespace FinalProjectOOP
             }
             public override void ShowDelivery()
             {
-                Console.WriteLine($"\n Ваша посылка выдвигается к пункту выдачи: {Address}");
+                Console.WriteLine($"\n Ваша посылка направляется к пункту выдачи: {Address}.");
             }
         }
 
@@ -112,7 +122,7 @@ namespace FinalProjectOOP
             }
             public override void ShowDelivery()
             {
-                Console.WriteLine("Ваша посылка выдвинулась к нужному адресу: ", Address);
+                Console.WriteLine("\n Ваша посылка направляется к нужному адресу: {0}.", Address);
             }
         }
 
@@ -136,9 +146,10 @@ namespace FinalProjectOOP
             public static void ShowTimeDelivery(int time)
             {
                 DateDelivery date = new DateDelivery(TimeSpan.FromMinutes(time));
-                Console.WriteLine($"\n Приблизительное время доставки: {date.Date}");
+                Console.WriteLine($"\n Приблизительное время доставки: {date.Date}.");
             }
         }
+
         struct DateDelivery
         {
             public DateTime Date;
@@ -148,6 +159,7 @@ namespace FinalProjectOOP
                 Date = DateTime.Now + time;
             }
         }
+
         public class Products
         {
             public static string[] products = { "Мясо", "Хлеб", "Молоко", "Зелень" };
